@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.tarena.fh.mapper.UserInfoMapper">
+
+	
+<delete id="delete">
+delete from userinfo where user_info_id=#{userId}
+</delete>
+
+<update id="update" >
+	update USERINFO set nickname=#{nickname},realname=#{realname},card_no=#{cardNo},gender=#{gender},email=#{email},birthday=#{birthday},address=#{address},telephone=#{telephone} where user_info_id=#{userInfoId}
+	</update>
+
+</mapper>

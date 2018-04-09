@@ -1,0 +1,43 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd">
+	<!--1.安全管理器
+		2.Realm
+		3.自定义的加密匹配器
+		4.权限认证的观察器
+		5.Shiro过滤工厂 
+
+	 -->
+	 
+	 	 <bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
+	 
+	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+		<property name="realm" ref="authRealm"></property>
+	</bean>
+	<bean id="authRealm" class="cn.tarena.fh.shiro.AuthRealm">
+		<property name="credentialsMatcher" ref="authCredentialMatch"></property>
+	</bean>
+	<bean id="authCredentialMatch" class="cn.tarena.fh.shiro.AuthCredentialMatch"></bean>
+	<bean id="advisor" class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+		<property name="securityManager" ref="securityManager"></property>
+	</bean>
+	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+		<property name="securityManager" ref="securityManager"></property>
+		<!-- 设置登录地址：当用户没有登录，访问非登录页面时指定的请求地址 此地址会自动放行  -->
+		<property name="loginUrl" value="/toproductList.action"></property>
+		<property name="filterChainDefinitions">
+			<value>
+
+
+			</value>
+		</property>
+		
+		
+		
+</bean>
+</beans>

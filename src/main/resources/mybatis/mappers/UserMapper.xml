@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.tarena.fh.mapper.UserMapper">
+	<resultMap type="User" id="userRM" autoMapping="true">
+		<id column="user_id" property="userId"/>
+		<association property="userInfo" javaType="UserInfo">
+			<id column="user_info_id" property="userInfoId"/>
+			<result column="nickname" property="nickname"/>
+			<result column="realname" property="realname"/>
+			<result column="birthday" property="birthday"/>
+			<result column="gender" property="gender"/>
+			<result column="email" property="email"/>
+			<result column="address" property="address"/>
+			<result column="telephone" property="telephone"/>
+			<result column="order_no" property="orderNo"/>
+			<result column="create_by" property="createBy"/>
+			<result column="create_type" property="createType"/>
+			<result column="update_by" property="updateBy"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="card_no" property="cardNo"/>
+		</association>
+	</resultMap>
+	<select id="findAll" resultMap="userRM">
+		SELECT * FROM USER LEFT JOIN userinfo ON user.USER_ID=userinfo.USER_INFO_ID where user.privilege=0 
+	</select>
+	<select id="findOne" resultMap="userRM">
+		SELECT * FROM USER LEFT JOIN userinfo ON user.USER_ID=userinfo.USER_INFO_ID where user_id=#{userId}
+	</select>
+	<delete id="delete">
+		DELETE FROM USER WHERE user_id=#{userId}
+
+	</delete>
+	<update id="changeState">
+		UPDATE USER SET state=#{state} WHERE user_id in
+		<foreach collection="userIds" item="userId" open="(" close=")" separator=",">
+			#{userId}
+		</foreach>
+	</update>
+	
+	<select id="login" resultMap="userRM">
+SELECT * FROM USER LEFT JOIN userinfo ON user.USER_ID=userinfo.USER_INFO_ID where username=#{username} and password=#{password} and state=1 or state=2
+	
+	</select>
+	
+	
+		<select id="findOneByUsername" resultMap="userRM">
+		SELECT * FROM USER LEFT JOIN userinfo ON USER_ID=USER_INFO_ID where username=#{username} 
+	</select>
+</mapper>

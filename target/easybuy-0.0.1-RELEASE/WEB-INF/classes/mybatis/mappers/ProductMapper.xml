@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 工作空间，mapper工作空间的唯一标识 -->
+
+<mapper namespace="cn.tarena.fh.mapper.ProductMapper"  >
+
+<resultMap type="Type" id="productRM">
+	<result column="type" property="name"/>
+	<result column="value" property="value"/>
+</resultMap>
+
+<select id="findAllProductByType" resultMap="productRM">
+	SELECT category type,COUNT(*) value from product GROUP BY category
+</select>
+
+
+
+<update id="changeStation">
+update PRODUCT set station=#{station} where prod_id =
+#{prodId}
+</update>
+
+
+<delete id="deleteProduct">
+delete from product where prod_id =
+#{prodId}
+</delete>
+
+<insert id="saveUrl">
+insert into img (prod_id,url) values 
+<foreach collection="list" separator="," item="str" >(#{prodId},#{str})</foreach>
+</insert>
+
+<select id="findAllProduct"  resultType="Product">select product.*,url page from PRODUCT left join img on product.prod_Id = img.prod_id</select> 
+
+<select id="findAllLike" resultType="Type">select p.name name ,count(*) value  from product p,user_product u where p.prod_Id=u.prod_id group by p.prod_Id</select>
+
+<select id="findAllProductByKeyWrod" resultType="Product">
+	select product.*,url page from PRODUCT,img where product.prod_Id = img.prod_id and  category=#{category} and station=1 and name like '%${keyword}%' for update
+</select>
+
+<select id="findProductByLike" resultType="Product">
+	SELECT p.*,url page FROM
+(SELECT * FROM
+product p
+	LEFT JOIN
+(select prod_id pid,COUNT(*) FROM user_product GROUP BY prod_id ORDER BY count(*) DESC)pu
+ ON p.PROD_ID=pu.pid)p,img where p.prod_Id = img.prod_id LIMIT 0,2
+</select>
+
+<select id="findProductByUserId" resultType="Product">
+SELECT * FROM product WHERE prod_id in (SELECT prod_id FROM user_product WHERE user_id=#{userId})
+</select>
+
+<select id="findOne"  resultType="Product">SELECT product.*,url page FROM PRODUCT,img WHERE product.prod_Id = img.prod_id AND product.prod_Id=#{prodId}</select>
+
+</mapper>
+
+
+

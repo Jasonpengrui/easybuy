@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.tarena.fh.mapper.OrderMapper">
+
+<sql id="ordersql">
+	SELECT order_id,money,paystate,create_time,ui.* FROM 
+order_p
+	LEFT JOIN
+(SELECT user_id uid,realname,address,telephone FROM 
+USER
+	LEFT JOIN
+userinfo
+	ON user_id=user_info_id
+WHERE privilege=0) ui
+	ON user_id=uid
+</sql>
+	<resultMap type="Order" id="orderRM" autoMapping="true">
+		<id column="order_id" property="orderId" />
+		<association property="user" javaType="User">
+			<id column="uid" property="userId"/>
+			<association property="userInfo" javaType="UserInfo">
+				<id column="uid" property="userInfoId"/>
+				<result column="realname" property="realname"/>
+				<result column="address" property="address"/>
+				<result column="telephone" property="telephone"/>
+			</association>
+		</association>
+	</resultMap>
+
+	<select id="findAll" resultMap="orderRM">
+		<include refid="ordersql"/>
+	</select>
+	
+	<select id="findOneByOid" resultMap="orderRM">
+		<include refid="ordersql"/> where order_id=#{orderId}
+	</select>
+	
+	<resultMap type="OrderItem" id="orderitemRM" autoMapping="true">
+		<result column="count" property="buynum"/>
+		<association property="product" javaType="Product">
+			<result column="name" property="name"/>
+			<result column="price" property="price"/>
+			<result column="category" property="category"/>
+			<result column="DESCRIPTION" property="description"/>
+			<result column="page" property="page"/>
+		</association>
+	</resultMap>
+	<select id="findOrderits" resultMap="orderitemRM">
+	select p.*,url page from	(SELECT p.*,ORDER_ID FROM 
+order_p_count opc
+	LEFT JOIN
+product p
+	ON opc.prod_id=p.prod_id
+	WHERE order_id=#{prodId} ) p,img where p.prod_id=img.prod_id
+	</select>
+	<delete id="deleteoitByOid">
+		DELETE FROM order_p_count WHERE order_id=#{orderId}
+	</delete>
+	<delete id="deleteByOid">
+		DELETE FROM order_p WHERE order_id=#{orderId}
+	</delete>
+	
+	<select id="findAllByUserId" resultMap="orderRM">
+		<include refid="ordersql"/> where uid=#{userId}
+	</select>
+	
+	
+		<insert id="saveOrder">
+		INSERT INTO order_p (order_id,user_id,money,paystate)
+VALUES (#{orderId},#{userId},#{money},#{paystate})
+	</insert>
+	<insert id="saveOrderItem">
+		INSERT INTO order_p_count(id,order_id,prod_id,COUNT) VALUES(#{id},#{orderId},#{prod_id},#{count});
+	</insert>
+</mapper>
